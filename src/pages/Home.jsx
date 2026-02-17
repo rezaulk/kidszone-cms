@@ -1,0 +1,213 @@
+import React, { useState, useMemo, useEffect } from "react";
+import BookCard from "../components/BookCard";
+import BookForm from "../components/BookForm";
+import Modal from "../components/Modal";
+import ViewBook from "../components/ViewBook";
+import CategoryManager from "../components/CategoryManager";
+import { fetchCategories } from "../firebase/categoryService";
+
+
+const Home = ({ books, addBook, updateBook, deleteBook }) => {
+  const [editingBook, setEditingBook] = useState(null);
+  const [isModalOpen, setIsModalOpen] = useState(false);
+  const [search, setSearch] = useState("");
+  const [categoryFilter, setCategoryFilter] = useState("All");
+  const [categories, setCategories] = useState(["All"]);
+  const [loadingCategories, setLoadingCategories] = useState(true);
+  const [showCategoryManager, setShowCategoryManager] = useState(false);
+
+  const [viewingBook, setViewingBook] = useState(null);
+  const [isViewModalOpen, setIsViewModalOpen] = useState(false);
+
+  // Fetch categories from Firebase on component mount
+  useEffect(() => {
+    const loadCategories = async () => {
+      try {
+        setLoadingCategories(true);
+        const fetchedCategories = await fetchCategories();
+        const categoryNames = fetchedCategories.map((cat) => cat.name);
+        setCategories(["All", ...categoryNames]);
+      } catch (error) {
+        console.error("Failed to load categories:", error);
+        setCategories(["All"]);
+      } finally {
+        setLoadingCategories(false);
+      }
+    };
+    loadCategories();
+  }, [showCategoryManager]);
+
+
+  // Dashboard calculations
+const totalBooks = books.length;
+
+const totalPremium = books.filter((b) => b.isPremium).length;
+
+const totalFree = books.filter((b) => !b.isPremium).length;
+
+const totalCategories = new Set(books.map((b) => b.category)).size;
+
+const totalRevenue = books.reduce(
+  (sum, book) => sum + Number(book.price),
+  0
+);
+
+
+
+  const filteredBooks = useMemo(() => {
+    return books.filter((book) => {
+      const matchSearch = book.title
+        .toLowerCase()
+        .includes(search.toLowerCase());
+
+      const matchCategory =
+        categoryFilter === "All" || book.category === categoryFilter;
+
+      return matchSearch && matchCategory;
+    });
+  }, [books, search, categoryFilter]);
+
+
+const filteredCount = filteredBooks.length;
+
+
+  const openAddModal = () => {
+    setEditingBook(null);
+    setIsModalOpen(true);
+  };
+
+  const openEditModal = (book) => {
+    setEditingBook(book);
+    setIsModalOpen(true);
+  };
+
+  const handleSubmit = (book) => {
+    if (editingBook) {
+      updateBook(book);
+    } else {
+      addBook(book);
+    }
+    setIsModalOpen(false);
+    setEditingBook(null);
+  };
+
+  const openViewModal = (book) => {
+  setViewingBook(book);
+  setIsViewModalOpen(true);
+};
+
+
+  return (
+    <div className="container">
+      <h1>Kidszone Admin Panel</h1>
+
+
+{/* Dashboard Stats */}
+<div className="stats-grid">
+  <div className="stat-card">
+    <h3>{totalBooks}</h3>
+    <p>Total Books</p>
+  </div>
+
+  <div className="stat-card premium-card">
+    <h3>{totalPremium}</h3>
+    <p>Premium Books</p>
+  </div>
+
+  <div className="stat-card free-card">
+    <h3>{totalFree}</h3>
+    <p>Free Books</p>
+  </div>
+
+  {/* <div className="stat-card">
+    <h3>{totalCategories}</h3>
+    <p>Categories</p>
+  </div>
+
+  <div className="stat-card revenue-card">
+    <h3>${totalRevenue}</h3>
+    <p>Total Revenue</p>
+  </div>
+
+  <div className="stat-card filter-card">
+    <h3>{filteredCount}</h3>
+    <p>Showing Results</p>
+  </div> */}
+</div>
+
+{/* Category Manager Toggle */}
+<div style={{ textAlign: "center", marginBottom: "20px" }}>
+  <button
+    className="add-btn"
+    onClick={() => setShowCategoryManager(!showCategoryManager)}
+    style={{ marginBottom: "20px" }}
+  >
+    {showCategoryManager ? "🔒 Hide Categories" : "📚 Manage Categories"}
+  </button>
+</div>
+
+{/* Category Manager */}
+{showCategoryManager && <CategoryManager />}
+
+      {/* Top Bar */}
+      <div className="top-bar">
+        <input
+          placeholder="Search by title..."
+          value={search}
+          onChange={(e) => setSearch(e.target.value)}
+        />
+
+        <select
+          value={categoryFilter}
+          onChange={(e) => setCategoryFilter(e.target.value)}
+        >
+          {categories.map((cat, index) => (
+            <option key={index}>{cat}</option>
+          ))}
+        </select>
+
+        <button className="add-btn" onClick={openAddModal}>
+          + Add Book
+        </button>
+      </div>
+
+      {/* Book List */}
+      <div className="grid">
+        {filteredBooks.map((book) => (
+         <BookCard
+  key={book.id}
+  book={book}
+  onEdit={openEditModal}
+  onDelete={deleteBook}
+  onView={openViewModal}
+/>
+
+        ))}
+      </div>
+
+      {/* Shared Modal */}
+      <Modal
+        isOpen={isModalOpen}
+        onClose={() => setIsModalOpen(false)}
+      >
+        <BookForm
+          onSubmit={handleSubmit}
+          editingBook={editingBook}
+        />
+      </Modal>
+
+
+      {/* View Modal */}
+<Modal
+  isOpen={isViewModalOpen}
+  onClose={() => setIsViewModalOpen(false)}
+>
+  <ViewBook book={viewingBook} />
+</Modal>
+
+
+    </div>
+  );
+};
+
+export default Home;
