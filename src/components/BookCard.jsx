@@ -1,6 +1,8 @@
 import React from "react";
 
 const BookCard = ({ book, onEdit, onDelete, onView }) => {
+  const isPremiumBook = !!book.isPremium;
+
   const handleDelete = () => {
     const confirmed = window.confirm(
       `Are you sure you want to delete "${book.title}"? This action cannot be undone.`
@@ -12,11 +14,26 @@ const BookCard = ({ book, onEdit, onDelete, onView }) => {
 
   return (
     <div className="card">
-      {book.isPremium && <span className="premium">⭐ PREMIUM</span>}
+      {isPremiumBook ? (
+        <span className="premium">⭐ PREMIUM</span>
+      ) : (
+        <span className="free-badge">FREE</span>
+      )}
+
+      {book.thumbnailUrl ? (
+        <img
+          src={book.thumbnailUrl}
+          alt={`${book.title} thumbnail`}
+          className="book-thumbnail"
+        />
+      ) : (
+        <div className="book-thumbnail placeholder">No Thumbnail</div>
+      )}
 
       <h3>{book.title}</h3>
       <p>{book.category}</p>
-      <p>${book.price}</p>
+      <p>{book.genre || "No Genre"}</p>
+      {isPremiumBook && <p className="price-text">${book.price}</p>}
 
       <div className="buttons">
         <button className="view-btn" onClick={() => onView(book)}>

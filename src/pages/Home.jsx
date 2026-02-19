@@ -4,7 +4,9 @@ import BookForm from "../components/BookForm";
 import Modal from "../components/Modal";
 import ViewBook from "../components/ViewBook";
 import CategoryManager from "../components/CategoryManager";
+import GenreManager from "../components/GenreManager";
 import { fetchCategories } from "../firebase/categoryService";
+import { fetchGenres } from "../firebase/genreService";
 
 
 const Home = ({ books, addBook, updateBook, deleteBook }) => {
@@ -12,9 +14,13 @@ const Home = ({ books, addBook, updateBook, deleteBook }) => {
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [search, setSearch] = useState("");
   const [categoryFilter, setCategoryFilter] = useState("All");
+  const [genreFilter, setGenreFilter] = useState("All");
   const [categories, setCategories] = useState(["All"]);
+  const [genres, setGenres] = useState(["All"]);
   const [loadingCategories, setLoadingCategories] = useState(true);
+  const [loadingGenres, setLoadingGenres] = useState(true);
   const [showCategoryManager, setShowCategoryManager] = useState(false);
+  const [showGenreManager, setShowGenreManager] = useState(false);
 
   const [viewingBook, setViewingBook] = useState(null);
   const [isViewModalOpen, setIsViewModalOpen] = useState(false);
@@ -36,6 +42,24 @@ const Home = ({ books, addBook, updateBook, deleteBook }) => {
     };
     loadCategories();
   }, [showCategoryManager]);
+
+  useEffect(() => {
+    const loadGenres = async () => {
+      try {
+        setLoadingGenres(true);
+        const fetchedGenres = await fetchGenres();
+        const genreNames = fetchedGenres.map((genre) => genre.name);
+        setGenres(["All", ...genreNames]);
+      } catch (error) {
+        console.error("Failed to load genres:", error);
+        setGenres(["All"]);
+      } finally {
+        setLoadingGenres(false);
+      }
+    };
+
+    loadGenres();
+  }, [showGenreManager]);
 
 
   // Dashboard calculations
@@ -63,9 +87,12 @@ const totalRevenue = books.reduce(
       const matchCategory =
         categoryFilter === "All" || book.category === categoryFilter;
 
-      return matchSearch && matchCategory;
+      const matchGenre =
+        genreFilter === "All" || book.genre === genreFilter;
+
+      return matchSearch && matchCategory && matchGenre;
     });
-  }, [books, search, categoryFilter]);
+  }, [books, search, categoryFilter, genreFilter]);
 
 
 const filteredCount = filteredBooks.length;
@@ -144,10 +171,19 @@ const filteredCount = filteredBooks.length;
   >
     {showCategoryManager ? "🔒 Hide Categories" : "📚 Manage Categories"}
   </button>
+
+  <button
+    className="add-btn"
+    onClick={() => setShowGenreManager(!showGenreManager)}
+    style={{ marginBottom: "20px", marginLeft: "12px" }}
+  >
+    {showGenreManager ? "🔒 Hide Genres" : "🎯 Manage Genres"}
+  </button>
 </div>
 
 {/* Category Manager */}
 {showCategoryManager && <CategoryManager />}
+{showGenreManager && <GenreManager />}
 
       {/* Top Bar */}
       <div className="top-bar">
@@ -160,9 +196,20 @@ const filteredCount = filteredBooks.length;
         <select
           value={categoryFilter}
           onChange={(e) => setCategoryFilter(e.target.value)}
+          disabled={loadingCategories}
         >
           {categories.map((cat, index) => (
             <option key={index}>{cat}</option>
+          ))}
+        </select>
+
+        <select
+          value={genreFilter}
+          onChange={(e) => setGenreFilter(e.target.value)}
+          disabled={loadingGenres}
+        >
+          {genres.map((genre, index) => (
+            <option key={index}>{genre}</option>
           ))}
         </select>
 

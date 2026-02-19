@@ -1,11 +1,15 @@
 import React, { useState, useEffect } from "react";
 import { Document, Page } from "react-pdf";
 import { convertGoogleDriveUrl } from "../utils/pdfUrlHandler";
+import { fetchCategories } from "../firebase/categoryService";
+import { fetchGenres } from "../firebase/genreService";
 
 const BookForm = ({ onSubmit, editingBook }) => {
   const [form, setForm] = useState({
     title: "",
+    thumbnailUrl: "",
     category: "",
+    genre: "",
     price: "",
     isPremium: false,
     previewUrl: "",
@@ -14,15 +18,71 @@ const BookForm = ({ onSubmit, editingBook }) => {
   const [numPages, setNumPages] = useState(null);
   const [zoom, setZoom] = useState(0.8);
   const [pdfError, setPdfError] = useState(null);
+  const [categories, setCategories] = useState([]);
+  const [genres, setGenres] = useState([]);
+  const [loadingCategories, setLoadingCategories] = useState(true);
+  const [loadingGenres, setLoadingGenres] = useState(true);
+
+  useEffect(() => {
+    const loadCategories = async () => {
+      try {
+        setLoadingCategories(true);
+        const fetchedCategories = await fetchCategories();
+        setCategories(fetchedCategories.map((category) => category.name));
+      } catch (error) {
+        console.error("Failed to load categories in form:", error);
+        setCategories([]);
+      } finally {
+        setLoadingCategories(false);
+      }
+    };
+
+    loadCategories();
+  }, []);
+
+  useEffect(() => {
+    const loadGenres = async () => {
+      try {
+        setLoadingGenres(true);
+        const fetchedGenres = await fetchGenres();
+        setGenres(fetchedGenres.map((genre) => genre.name));
+      } catch (error) {
+        console.error("Failed to load genres in form:", error);
+        setGenres([]);
+      } finally {
+        setLoadingGenres(false);
+      }
+    };
+
+    loadGenres();
+  }, []);
 
   useEffect(() => {
     if (editingBook) {
-      setForm(editingBook);
+      setForm({
+        title: editingBook.title || "",
+        thumbnailUrl: editingBook.thumbnailUrl || "",
+        category: editingBook.category || "",
+        genre: editingBook.genre || "",
+        price: editingBook.price ?? "",
+        isPremium: !!editingBook.isPremium,
+        previewUrl: editingBook.previewUrl || "",
+        id: editingBook.id,
+      });
     }
   }, [editingBook]);
 
   const handleChange = (e) => {
     const { name, value, type, checked } = e.target;
+
+    if (type === "checkbox" && name === "isPremium") {
+      setForm((prevForm) => ({
+        ...prevForm,
+        isPremium: checked,
+        price: checked ? prevForm.price : "",
+      }));
+      return;
+    }
 
     setForm({
       ...form,
@@ -32,11 +92,16 @@ const BookForm = ({ onSubmit, editingBook }) => {
 
   const handleSubmit = (e) => {
     e.preventDefault();
-    onSubmit(form);
+    onSubmit({
+      ...form,
+      price: form.isPremium ? form.price : 0,
+    });
 
     setForm({
       title: "",
+      thumbnailUrl: "",
       category: "",
+      genre: "",
       price: "",
       isPremium: false,
       previewUrl: "",
@@ -53,6 +118,14 @@ const BookForm = ({ onSubmit, editingBook }) => {
     setPdfError("Failed to load PDF. Check URL format.");
   };
 
+  const categoryOptions = form.category
+    ? Array.from(new Set([...categories, form.category]))
+    : categories;
+
+  const genreOptions = form.genre
+    ? Array.from(new Set([...genres, form.genre]))
+    : genres;
+
   return (
     <form className="form" onSubmit={handleSubmit}>
       <input
@@ -64,21 +137,57 @@ const BookForm = ({ onSubmit, editingBook }) => {
       />
 
       <input
+        name="thumbnailUrl"
+        placeholder="Thumbnail image URL"
+        value={form.thumbnailUrl}
+        onChange={handleChange}
+      />
+
+      <select
         name="category"
-        placeholder="Category"
         value={form.category}
         onChange={handleChange}
         required
-      />
+        disabled={loadingCategories}
+      >
+        <option value="">
+          {loadingCategories ? "Loading categories..." : "Select Category"}
+        </option>
+        {categoryOptions.map((categoryName) => (
+          <option key={categoryName} value={categoryName}>
+            {categoryName}
+          </option>
+        ))}
+      </select>
 
-      <input
-        name="price"
-        type="number"
-        placeholder="Price"
-        value={form.price}
+      <select
+        name="genre"
+        value={form.genre}
         onChange={handleChange}
         required
-      />
+        disabled={loadingGenres}
+      >
+        <option value="">
+          {loadingGenres ? "Loading genres..." : "Select Genre"}
+        </option>
+        {genreOptions.map((genreName) => (
+          <option key={genreName} value={genreName}>
+            {genreName}
+          </option>
+        ))}
+      </select>
+
+      {form.isPremium && (
+        <input
+          name="price"
+          type="number"
+          placeholder="Price"
+          value={form.price}
+          onChange={handleChange}
+          min="0"
+          required
+        />
+      )}
 
       <input
         name="previewUrl"

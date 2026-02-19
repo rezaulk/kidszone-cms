@@ -289,13 +289,32 @@ body {
   line-height: 1.4;
 }
 
+.book-thumbnail {
+  width: 100%;
+  height: 150px;
+  object-fit: cover;
+  border-radius: 10px;
+  margin-bottom: 12px;
+  border: 2px solid #e2e8f0;
+  background: #f8fafc;
+}
+
+.book-thumbnail.placeholder {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: #94a3b8;
+  font-size: 13px;
+  font-weight: 600;
+}
+
 .card p {
   font-size: 13px;
   color: #718096;
   margin-bottom: 4px;
 }
 
-.card p:last-of-type {
+.card .price-text {
   font-size: 16px;
   font-weight: 700;
   color: #6366f1;
@@ -315,6 +334,20 @@ body {
   letter-spacing: 0.5px;
   box-shadow: 0 4px 12px rgba(245, 158, 11, 0.3);
   animation: badgePulse 2s ease-in-out infinite;
+}
+
+.free-badge {
+  position: absolute;
+  top: 12px;
+  right: 12px;
+  background: linear-gradient(135deg, #10b981 0%, #059669 100%);
+  color: white;
+  padding: 5px 12px;
+  border-radius: 6px;
+  font-size: 10px;
+  font-weight: 700;
+  letter-spacing: 0.5px;
+  box-shadow: 0 4px 12px rgba(16, 185, 129, 0.3);
 }
 
 @keyframes badgePulse {
@@ -597,21 +630,41 @@ button:hover::before {
   position: absolute;
   right: 16px;
   top: 16px;
-  background: #e2e8f0;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  background: linear-gradient(135deg, #eef2ff 0%, #e0e7ff 100%);
   border: none;
   width: 36px;
   height: 36px;
-  border-radius: 8px;
-  font-size: 20px;
+  min-width: 36px;
+  padding: 0;
+  border-radius: 10px;
+  font-size: 24px;
+  line-height: 1;
+  flex: 0 0 36px;
+  overflow: visible;
   cursor: pointer;
   transition: all 0.3s ease;
   color: #6366f1;
   font-weight: 700;
+  box-shadow: 0 4px 12px rgba(99, 102, 241, 0.18);
 }
 
 .close-btn:hover {
-  background: #dbeafe;
-  transform: rotate(90deg) scale(1.05);
+  background: linear-gradient(135deg, #e0e7ff 0%, #c7d2fe 100%);
+  transform: translateY(-1px) scale(1.04);
+  color: #4f46e5;
+  box-shadow: 0 8px 18px rgba(99, 102, 241, 0.28);
+}
+
+.close-btn::before {
+  display: none;
+}
+
+.close-btn:focus-visible {
+  outline: none;
+  box-shadow: 0 0 0 3px rgba(99, 102, 241, 0.2), 0 8px 18px rgba(99, 102, 241, 0.28);
 }
 
 /* ===== VIEW CONTAINER ===== */
@@ -620,6 +673,25 @@ button:hover::before {
   flex-direction: column;
   gap: 16px;
   padding: 10px 0;
+}
+
+.view-thumbnail {
+  width: 100%;
+  max-height: 260px;
+  object-fit: cover;
+  border-radius: 12px;
+  border: 2px solid #e2e8f0;
+  background: #f8fafc;
+}
+
+.view-thumbnail.placeholder {
+  min-height: 140px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: #94a3b8;
+  font-size: 14px;
+  font-weight: 600;
 }
 
 .view-container h2 {
@@ -820,12 +892,15 @@ button:hover::before {
 
 .edit-form {
   display: flex;
+  align-items: center;
+  flex-wrap: wrap;
   gap: 8px;
   width: 100%;
 }
 
 .edit-form input {
   flex: 1;
+  min-width: 0;
   padding: 8px 12px;
   border: 2px solid #6366f1;
   border-radius: 6px;
@@ -840,6 +915,8 @@ button:hover::before {
 
 .save-btn,
 .cancel-btn {
+  flex: 0 0 auto;
+  min-width: 78px;
   padding: 8px 12px;
   border: none;
   border-radius: 6px;
@@ -847,6 +924,13 @@ button:hover::before {
   font-weight: 600;
   cursor: pointer;
   transition: all 0.3s ease;
+  overflow: visible;
+  z-index: auto;
+}
+
+.save-btn::before,
+.cancel-btn::before {
+  display: none;
 }
 
 .save-btn {
@@ -856,7 +940,7 @@ button:hover::before {
 
 .save-btn:hover:not(:disabled) {
   background: #059669;
-  transform: scale(1.05);
+  transform: translateY(-1px);
 }
 
 .cancel-btn {
@@ -866,7 +950,7 @@ button:hover::before {
 
 .cancel-btn:hover:not(:disabled) {
   background: #64748b;
-  transform: scale(1.05);
+  transform: translateY(-1px);
 }
 
 .save-btn:disabled,

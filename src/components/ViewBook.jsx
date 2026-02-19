@@ -21,10 +21,23 @@ const ViewBook = ({ book }) => {
 
   return (
     <div className="view-container">
+      {book.thumbnailUrl ? (
+        <img
+          src={book.thumbnailUrl}
+          alt={`${book.title} thumbnail`}
+          className="view-thumbnail"
+        />
+      ) : (
+        <div className="view-thumbnail placeholder">No Thumbnail</div>
+      )}
+
       <h2>{book.title}</h2>
 
       <p><strong>Category:</strong> {book.category}</p>
-      <p><strong>Price:</strong> ${book.price}</p>
+      <p><strong>Genre:</strong> {book.genre || "No Genre"}</p>
+      <p>
+        <strong>Price:</strong> {book.isPremium ? `$${book.price}` : "Free"}
+      </p>
       <p>
         <strong>Type:</strong>{" "}
         {book.isPremium ? "Premium Book" : "Free Book"}
