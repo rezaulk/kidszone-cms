@@ -1,33 +1,33 @@
 import {
-  collection,
-  addDoc,
-  updateDoc,
-  deleteDoc,
-  doc,
-  getDocs,
-  query,
-  orderBy,
-} from "firebase/firestore";
+  get,
+  push,
+  ref,
+  remove,
+  set,
+  update,
+} from "firebase/database";
 import { db } from "./config";
 
 const CATEGORIES_COLLECTION = "categories";
 
 /**
- * Fetch all categories from Firestore
+ * Fetch all categories from Realtime Database
  * @returns {Promise<Array>} Array of category objects with id field
  */
 export const fetchCategories = async () => {
   try {
-    const q = query(collection(db, CATEGORIES_COLLECTION), orderBy("name", "asc"));
-    const querySnapshot = await getDocs(q);
-    const categories = [];
-    querySnapshot.forEach((doc) => {
-      categories.push({
-        id: doc.id,
-        ...doc.data(),
-      });
-    });
-    return categories;
+    const snapshot = await get(ref(db, CATEGORIES_COLLECTION));
+
+    if (!snapshot.exists()) {
+      return [];
+    }
+
+    const categories = Object.entries(snapshot.val()).map(([id, value]) => ({
+      id,
+      ...value,
+    }));
+
+    return categories.sort((a, b) => (a.name || "").localeCompare(b.name || ""));
   } catch (error) {
     console.error("Error fetching categories:", error);
     throw error;
@@ -35,18 +35,22 @@ export const fetchCategories = async () => {
 };
 
 /**
- * Add a new category to Firestore
+ * Add a new category to Realtime Database
  * @param {string} name - Category name
- * @returns {Promise<string>} Document ID of the created category
+ * @returns {Promise<string>} Generated key of the created category
  */
 export const addCategoryToFirebase = async (name) => {
   try {
-    const docRef = await addDoc(collection(db, CATEGORIES_COLLECTION), {
+    const categoriesRef = ref(db, CATEGORIES_COLLECTION);
+    const newCategoryRef = push(categoriesRef);
+
+    await set(newCategoryRef, {
       name: name.trim(),
-      createdAt: new Date(),
-      updatedAt: new Date(),
+      createdAt: Date.now(),
+      updatedAt: Date.now(),
     });
-    return docRef.id;
+
+    return newCategoryRef.key;
   } catch (error) {
     console.error("Error adding category:", error);
     throw error;
@@ -54,17 +58,16 @@ export const addCategoryToFirebase = async (name) => {
 };
 
 /**
- * Update a category in Firestore
- * @param {string} categoryId - Category document ID
+ * Update a category in Realtime Database
+ * @param {string} categoryId - Category key
  * @param {string} name - Updated category name
  * @returns {Promise<void>}
  */
 export const updateCategoryInFirebase = async (categoryId, name) => {
   try {
-    const categoryRef = doc(db, CATEGORIES_COLLECTION, categoryId);
-    await updateDoc(categoryRef, {
+    await update(ref(db, `${CATEGORIES_COLLECTION}/${categoryId}`), {
       name: name.trim(),
-      updatedAt: new Date(),
+      updatedAt: Date.now(),
     });
   } catch (error) {
     console.error("Error updating category:", error);
@@ -73,13 +76,13 @@ export const updateCategoryInFirebase = async (categoryId, name) => {
 };
 
 /**
- * Delete a category from Firestore
- * @param {string} categoryId - Category document ID
+ * Delete a category from Realtime Database
+ * @param {string} categoryId - Category key
  * @returns {Promise<void>}
  */
 export const deleteCategoryFromFirebase = async (categoryId) => {
   try {
-    await deleteDoc(doc(db, CATEGORIES_COLLECTION, categoryId));
+    await remove(ref(db, `${CATEGORIES_COLLECTION}/${categoryId}`));
   } catch (error) {
     console.error("Error deleting category:", error);
     throw error;

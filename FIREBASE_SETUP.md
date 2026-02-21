@@ -18,8 +18,8 @@ This document explains how to set up Firebase for the Kidszone CMS application.
 
 ### 2. Enable Firebase Services
 
-#### Firestore Database
-1. In Firebase Console, go to **Build → Firestore Database**
+#### Realtime Database
+1. In Firebase Console, go to **Build → Realtime Database**
 2. Click **Create database**
 3. Choose **Start in test mode** (for development)
 4. Select the region close to your location
@@ -45,6 +45,7 @@ This document explains how to set up Firebase for the Kidszone CMS application.
    - API Key
    - Auth Domain
    - Project ID
+  - Database URL
    - Storage Bucket
    - Messaging Sender ID
    - App ID
@@ -61,6 +62,7 @@ This document explains how to set up Firebase for the Kidszone CMS application.
    VITE_FIREBASE_API_KEY=your_api_key_here
    VITE_FIREBASE_AUTH_DOMAIN=your_auth_domain_here
    VITE_FIREBASE_PROJECT_ID=your_project_id_here
+  VITE_FIREBASE_DATABASE_URL=your_database_url_here
    VITE_FIREBASE_STORAGE_BUCKET=your_storage_bucket_here
    VITE_FIREBASE_MESSAGING_SENDER_ID=your_messaging_sender_id_here
    VITE_FIREBASE_APP_ID=your_app_id_here
@@ -78,9 +80,9 @@ npm install
 npm run dev
 ```
 
-## Firestore Database Structure
+## Realtime Database Structure
 
-Books are stored in a collection called `books` with the following structure:
+Books are stored under a top-level node called `books` with the following structure:
 
 ```
 books/
@@ -99,34 +101,28 @@ books/
 
 ## Firebase Security Rules
 
-### Firestore Rules (Development)
+### Realtime Database Rules (Development)
 
 For development, use these test mode rules. **Update for production!**
 
 ```
-rules_version = '2';
-service cloud.firestore {
-  match /databases/{database}/documents {
-    // Allow read/write for all users (development only!)
-    match /books/{document=**} {
-      allow read, write: if true;
-    }
+{
+  "rules": {
+    ".read": true,
+    ".write": true
   }
 }
 ```
 
-### Firestore Rules (Production)
+### Realtime Database Rules (Production)
 
 For production, implement proper authentication:
 
 ```
-rules_version = '2';
-service cloud.firestore {
-  match /databases/{database}/documents {
-    // Only authenticated users can read/write
-    match /books/{document=**} {
-      allow read, write: if request.auth != null;
-    }
+{
+  "rules": {
+    ".read": "auth != null",
+    ".write": "auth != null"
   }
 }
 ```
@@ -153,14 +149,14 @@ src/
 ## Available Functions (firebaseService.js)
 
 ### fetchBooks()
-Retrieves all books from Firestore, ordered by creation date (newest first).
+Retrieves all books from Realtime Database, sorted by title.
 
 ```javascript
 const books = await fetchBooks();
 ```
 
 ### addBookToFirebase(book)
-Adds a new book to Firestore.
+Adds a new book to Realtime Database.
 
 ```javascript
 const bookId = await addBookToFirebase({
@@ -187,7 +183,7 @@ await updateBookInFirebase({
 ```
 
 ### deleteBookFromFirebase(bookId)
-Deletes a book from Firestore.
+Deletes a book from Realtime Database.
 
 ```javascript
 await deleteBookFromFirebase("bookId");
@@ -196,7 +192,7 @@ await deleteBookFromFirebase("bookId");
 ## Troubleshooting
 
 ### "Permission denied" errors
-- Ensure Firestore Database is enabled in Firebase Console
+- Ensure Realtime Database is enabled in Firebase Console
 - Check your security rules (set to test mode for development)
 - Verify environment variables are correctly set
 
@@ -214,7 +210,7 @@ await deleteBookFromFirebase("bookId");
 2. **PDF Upload**: Enable users to upload PDFs to Firebase Storage
 3. **User Profiles**: Store user data and their book collections
 4. **Cloud Functions**: Add backend logic for complex operations
-5. **Real-time Updates**: Use Firestore listeners for live data synchronization
+5. **Real-time Updates**: Use Realtime Database listeners for live data synchronization
 
 ## Environment Variables Checklist
 
@@ -222,11 +218,12 @@ await deleteBookFromFirebase("bookId");
 - [ ] Added `VITE_FIREBASE_API_KEY`
 - [ ] Added `VITE_FIREBASE_AUTH_DOMAIN`
 - [ ] Added `VITE_FIREBASE_PROJECT_ID`
+- [ ] Added `VITE_FIREBASE_DATABASE_URL`
 - [ ] Added `VITE_FIREBASE_STORAGE_BUCKET`
 - [ ] Added `VITE_FIREBASE_MESSAGING_SENDER_ID`
 - [ ] Added `VITE_FIREBASE_APP_ID`
-- [ ] Created Firestore Database
-- [ ] Set Firestore Rules
+- [ ] Created Realtime Database
+- [ ] Set Realtime Database Rules
 - [ ] Installed dependencies (`npm install`)
 
 For more information, visit the [Firebase Documentation](https://firebase.google.com/docs).

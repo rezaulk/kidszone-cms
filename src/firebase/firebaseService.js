@@ -1,33 +1,35 @@
 import {
-  collection,
-  addDoc,
-  updateDoc,
-  deleteDoc,
-  doc,
-  getDocs,
-  query,
-  orderBy,
-} from "firebase/firestore";
+  get,
+  push,
+  ref,
+  remove,
+  set,
+  update,
+} from "firebase/database";
 import { db } from "./config";
 
 const BOOKS_COLLECTION = "books";
 
 /**
- * Fetch all books from Firestore
+ * Fetch all books from Realtime Database
  * @returns {Promise<Array>} Array of book objects with id field
  */
 export const fetchBooks = async () => {
   try {
-    const q = query(collection(db, BOOKS_COLLECTION), orderBy("title", "asc"));
-    const querySnapshot = await getDocs(q);
-    const books = [];
-    querySnapshot.forEach((doc) => {
-      books.push({
-        id: doc.id,
-        ...doc.data(),
-      });
-    });
-    return books;
+    const snapshot = await get(ref(db, BOOKS_COLLECTION));
+
+    if (!snapshot.exists()) {
+      return [];
+    }
+
+    const books = Object.entries(snapshot.val()).map(([id, value]) => ({
+      id,
+      ...value,
+    }));
+
+    return books.sort((a, b) =>
+      (a.title || "").localeCompare(b.title || "")
+    );
   } catch (error) {
     console.error("Error fetching books:", error);
     throw error;
@@ -35,19 +37,22 @@ export const fetchBooks = async () => {
 };
 
 /**
- * Add a new book to Firestore
+ * Add a new book to Realtime Database
  * @param {Object} book - Book object without id
- * @returns {Promise<string>} Document ID of the created book
+ * @returns {Promise<string>} Generated key of the created book
  */
 export const addBookToFirebase = async (book) => {
   try {
-    debugger;
-    const docRef = await addDoc(collection(db, BOOKS_COLLECTION), {
+    const booksRef = ref(db, BOOKS_COLLECTION);
+    const newBookRef = push(booksRef);
+
+    await set(newBookRef, {
       ...book,
-      createdAt: new Date(),
-      updatedAt: new Date(),
+      createdAt: Date.now(),
+      updatedAt: Date.now(),
     });
-    return docRef.id;
+
+    return newBookRef.key;
   } catch (error) {
     console.error("Error adding book:", error);
     throw error;
@@ -55,18 +60,17 @@ export const addBookToFirebase = async (book) => {
 };
 
 /**
- * Update an existing book in Firestore
- * @param {string} bookId - Document ID
+ * Update an existing book in Realtime Database
  * @param {Object} book - Updated book object (should include id field)
  * @returns {Promise<void>}
  */
 export const updateBookInFirebase = async (book) => {
   try {
     const { id, ...bookData } = book;
-    const bookRef = doc(db, BOOKS_COLLECTION, id);
-    await updateDoc(bookRef, {
+
+    await update(ref(db, `${BOOKS_COLLECTION}/${id}`), {
       ...bookData,
-      updatedAt: new Date(),
+      updatedAt: Date.now(),
     });
   } catch (error) {
     console.error("Error updating book:", error);
@@ -75,13 +79,13 @@ export const updateBookInFirebase = async (book) => {
 };
 
 /**
- * Delete a book from Firestore
- * @param {string} bookId - Document ID
+ * Delete a book from Realtime Database
+ * @param {string} bookId - Realtime DB key
  * @returns {Promise<void>}
  */
 export const deleteBookFromFirebase = async (bookId) => {
   try {
-    await deleteDoc(doc(db, BOOKS_COLLECTION, bookId));
+    await remove(ref(db, `${BOOKS_COLLECTION}/${bookId}`));
   } catch (error) {
     console.error("Error deleting book:", error);
     throw error;

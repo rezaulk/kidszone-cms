@@ -13,7 +13,7 @@ function App() {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
 
-  // Load books from Firestore on component mount
+  // Load books from Firebase Realtime Database on component mount
   useEffect(() => {
     loadBooks();
   }, []);
@@ -27,7 +27,7 @@ function App() {
     } catch (err) {
       console.error("Failed to load books:", err);
       setError("Failed to load books. Please try again.");
-      // Fallback to empty array if Firestore is not configured
+      // Fallback to empty array if database is not configured
       setBooks([]);
     } finally {
       setLoading(false);
@@ -36,9 +36,7 @@ function App() {
 
   const addBook = async (book) => {
     try {
-      debugger;
       const newBookId = await addBookToFirebase(book);
-      debugger;
 
       setBooks([{ ...book, id: newBookId }, ...books]);
     } catch (err) {
