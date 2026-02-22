@@ -10,6 +10,7 @@ const BookForm = ({ onSubmit, editingBook }) => {
     thumbnailUrl: "",
     category: "",
     genre: "",
+    contentType: "Books",
     price: "",
     isPremium: false,
     previewUrl: "",
@@ -64,6 +65,7 @@ const BookForm = ({ onSubmit, editingBook }) => {
         thumbnailUrl: editingBook.thumbnailUrl || "",
         category: editingBook.category || "",
         genre: editingBook.genre || "",
+        contentType: editingBook.contentType || "Books",
         price: editingBook.price ?? "",
         isPremium: !!editingBook.isPremium,
         previewUrl: editingBook.previewUrl || "",
@@ -102,6 +104,7 @@ const BookForm = ({ onSubmit, editingBook }) => {
       thumbnailUrl: "",
       category: "",
       genre: "",
+      contentType: "Books",
       price: "",
       isPremium: false,
       previewUrl: "",
@@ -175,6 +178,16 @@ const BookForm = ({ onSubmit, editingBook }) => {
             {genreName}
           </option>
         ))}
+      </select>
+
+      <select
+        name="contentType"
+        value={form.contentType}
+        onChange={handleChange}
+        required
+      >
+        <option value="Books">Books</option>
+        <option value="Pages">Pages</option>
       </select>
 
       {form.isPremium && (

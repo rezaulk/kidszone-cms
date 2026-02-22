@@ -1,4 +1,5 @@
 import React from "react";
+import { convertThumbnailUrl } from "../utils/pdfUrlHandler";
 
 const BookCard = ({ book, onEdit, onDelete, onView }) => {
   const isPremiumBook = !!book.isPremium;
@@ -22,7 +23,7 @@ const BookCard = ({ book, onEdit, onDelete, onView }) => {
 
       {book.thumbnailUrl ? (
         <img
-          src={book.thumbnailUrl}
+          src={convertThumbnailUrl(book.thumbnailUrl)}
           alt={`${book.title} thumbnail`}
           className="book-thumbnail"
         />
@@ -33,6 +34,7 @@ const BookCard = ({ book, onEdit, onDelete, onView }) => {
       <h3>{book.title}</h3>
       <p>{book.category}</p>
       <p>{book.genre || "No Genre"}</p>
+      <p>{book.contentType || "Books"}</p>
       {isPremiumBook && <p className="price-text">${book.price}</p>}
 
       <div className="buttons">

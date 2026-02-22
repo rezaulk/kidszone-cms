@@ -1,6 +1,6 @@
 import React, { useState } from "react";
 import { Document, Page } from "react-pdf";
-import { convertGoogleDriveUrl } from "../utils/pdfUrlHandler";
+import { convertGoogleDriveUrl, convertThumbnailUrl } from "../utils/pdfUrlHandler";
 
 const ViewBook = ({ book }) => {
   const [numPages, setNumPages] = useState(null);
@@ -23,7 +23,7 @@ const ViewBook = ({ book }) => {
     <div className="view-container">
       {book.thumbnailUrl ? (
         <img
-          src={book.thumbnailUrl}
+          src={convertThumbnailUrl(book.thumbnailUrl)}
           alt={`${book.title} thumbnail`}
           className="view-thumbnail"
         />
@@ -35,6 +35,7 @@ const ViewBook = ({ book }) => {
 
       <p><strong>Category:</strong> {book.category}</p>
       <p><strong>Genre:</strong> {book.genre || "No Genre"}</p>
+      <p><strong>Content:</strong> {book.contentType || "Books"}</p>
       <p>
         <strong>Price:</strong> {book.isPremium ? `$${book.price}` : "Free"}
       </p>
