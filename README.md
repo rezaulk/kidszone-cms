@@ -1,16 +1,46 @@
-# React + Vite
+Privacy Policy
 
-This template provides a minimal setup to get React working in Vite with HMR and some ESLint rules.
+Effective Date: March 2026
 
-Currently, two official plugins are available:
+KidsZone ("we", "our", or "us") operates the KidsZone mobile application.
 
-- [@vitejs/plugin-react](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react) uses [Babel](https://babeljs.io/) (or [oxc](https://oxc.rs) when used in [rolldown-vite](https://vite.dev/guide/rolldown)) for Fast Refresh
-- [@vitejs/plugin-react-swc](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react-swc) uses [SWC](https://swc.rs/) for Fast Refresh
+1. Information We Collect
+We may collect:
+- User information (name, email)
+- App usage data
+- Device information
+- Images or content uploaded by users
 
-## React Compiler
+2. How We Use Information
+We use collected data to:
+- Provide and improve app features
+- Store user-generated content
+- Communicate with users
+- Ensure app security
 
-The React Compiler is not enabled on this template because of its impact on dev & build performances. To add it, see [this documentation](https://react.dev/learn/react-compiler/installation).
+3. Firebase and Third-party Services
+We use Google Firebase services, including:
+- Firebase Realtime Database
+- Firebase Authentication
+These services may collect and process data according to Google's Privacy Policy.
 
-## Expanding the ESLint configuration
+4. Data Storage and Security
+User data is stored securely on cloud servers (Firebase).
+We take reasonable measures to protect user data.
 
-If you are developing a production application, we recommend using TypeScript with type-aware lint rules enabled. Check out the [TS template](https://github.com/vitejs/vite/tree/main/packages/create-vite/template-react-ts) for information on how to integrate TypeScript and [`typescript-eslint`](https://typescript-eslint.io) in your project.
+5. Data Sharing
+We do not sell user data.
+We may share data with trusted third-party services (e.g., Firebase).
+
+6. Children's Privacy
+Our app is designed for children. We do not knowingly collect personal data without parental consent.
+
+7. User Rights
+Users can request:
+- Data access
+- Data deletion
+
+To request deletion, contact us.
+
+8. Contact Us
+Email: your-email@example.com
