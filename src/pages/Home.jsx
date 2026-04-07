@@ -24,6 +24,9 @@ const Home = ({ books, addBook, updateBook, deleteBook }) => {
 
   const [viewingBook, setViewingBook] = useState(null);
   const [isViewModalOpen, setIsViewModalOpen] = useState(false);
+  const [dateFrom, setDateFrom] = useState("");
+  const [dateTo, setDateTo] = useState("");
+  const [skuFilter, setSkuFilter] = useState("All");
 
   // Fetch categories from Firebase on component mount
   useEffect(() => {
@@ -79,6 +82,9 @@ const totalRevenue = books.reduce(
 
 
   const filteredBooks = useMemo(() => {
+    const fromTs = dateFrom ? new Date(dateFrom).getTime() : null;
+    const toTs = dateTo ? new Date(dateTo + "T23:59:59").getTime() : null;
+
     return books.filter((book) => {
       const matchSearch = book.title
         .toLowerCase()
@@ -90,9 +96,18 @@ const totalRevenue = books.reduce(
       const matchGenre =
         genreFilter === "All" || book.genre === genreFilter;
 
-      return matchSearch && matchCategory && matchGenre;
+      const matchDate =
+        (!fromTs || (book.createdAt && book.createdAt >= fromTs)) &&
+        (!toTs || (book.createdAt && book.createdAt <= toTs));
+
+      const matchSku =
+        skuFilter === "All" ||
+        (skuFilter === "Has SKU" && !!book.iapSKUProductId) ||
+        (skuFilter === "Missing SKU" && !book.iapSKUProductId);
+
+      return matchSearch && matchCategory && matchGenre && matchDate && matchSku;
     });
-  }, [books, search, categoryFilter, genreFilter]);
+  }, [books, search, categoryFilter, genreFilter, dateFrom, dateTo, skuFilter]);
 
 
 const filteredCount = filteredBooks.length;
@@ -213,9 +228,46 @@ const filteredCount = filteredBooks.length;
           ))}
         </select>
 
+        <select
+          value={skuFilter}
+          onChange={(e) => setSkuFilter(e.target.value)}
+        >
+          <option value="All">All SKU</option>
+          <option value="Has SKU">Has SKU</option>
+          <option value="Missing SKU">Missing SKU</option>
+        </select>
+
         <button className="add-btn" onClick={openAddModal}>
           + Add Book
         </button>
+      </div>
+
+      {/* Date Filter */}
+      <div className="date-filter-bar">
+        <label>
+          From:
+          <input
+            type="date"
+            value={dateFrom}
+            onChange={(e) => setDateFrom(e.target.value)}
+          />
+        </label>
+        <label>
+          To:
+          <input
+            type="date"
+            value={dateTo}
+            onChange={(e) => setDateTo(e.target.value)}
+          />
+        </label>
+        {(dateFrom || dateTo) && (
+          <button
+            className="clear-date-btn"
+            onClick={() => { setDateFrom(""); setDateTo(""); }}
+          >
+            Clear Dates
+          </button>
+        )}
       </div>
 
       {/* Book List */}

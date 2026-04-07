@@ -43,6 +43,9 @@ const ViewBook = ({ book }) => {
         <strong>Type:</strong>{" "}
         {book.isPremium ? "Premium Book" : "Free Book"}
       </p>
+      {book.iapSKUProductId && (
+        <p><strong>IAP SKU:</strong> {book.iapSKUProductId}</p>
+      )}
 
       {/* Zoom Controls - only for direct PDFs */}
       {convertGoogleDriveUrl(book.previewUrl)?.type === 'pdf' && (

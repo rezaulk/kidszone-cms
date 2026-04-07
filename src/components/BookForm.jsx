@@ -14,6 +14,7 @@ const BookForm = ({ onSubmit, editingBook }) => {
     price: "",
     isPremium: false,
     previewUrl: "",
+    iapSKUProductId: "",
   });
 
   const [numPages, setNumPages] = useState(null);
@@ -69,6 +70,7 @@ const BookForm = ({ onSubmit, editingBook }) => {
         price: editingBook.price ?? "",
         isPremium: !!editingBook.isPremium,
         previewUrl: editingBook.previewUrl || "",
+        iapSKUProductId: editingBook.iapSKUProductId || "",
         id: editingBook.id,
       });
     }
@@ -92,11 +94,17 @@ const BookForm = ({ onSubmit, editingBook }) => {
     });
   };
 
+  const generateSKU = () => {
+    const randomPart = () => Math.random().toString(36).substring(2, 12);
+    return `book_${randomPart()}_${randomPart().substring(0, 5)}_${randomPart().substring(0, 2)}`;
+  };
+
   const handleSubmit = (e) => {
     e.preventDefault();
     onSubmit({
       ...form,
       price: form.isPremium ? form.price : 0,
+      iapSKUProductId: form.iapSKUProductId || generateSKU(),
     });
 
     setForm({
@@ -108,6 +116,7 @@ const BookForm = ({ onSubmit, editingBook }) => {
       price: "",
       isPremium: false,
       previewUrl: "",
+      iapSKUProductId: "",
     });
   };
 
@@ -214,6 +223,13 @@ const BookForm = ({ onSubmit, editingBook }) => {
         <br/>
         ✅ Direct PDF: https://example.com/book.pdf
       </small>
+
+      <input
+        name="iapSKUProductId"
+        placeholder="IAP SKU Product ID (auto-generated if empty)"
+        value={form.iapSKUProductId}
+        onChange={handleChange}
+      />
 
       <label>
         <input
