@@ -61,6 +61,7 @@ const BookForm = ({ onSubmit, editingBook }) => {
 
   useEffect(() => {
     if (editingBook) {
+      debugger;
       setForm({
         title: editingBook.title || "",
         thumbnailUrl: editingBook.thumbnailUrl || "",
@@ -104,7 +105,9 @@ const BookForm = ({ onSubmit, editingBook }) => {
     onSubmit({
       ...form,
       price: form.isPremium ? form.price : 0,
-      iapSKUProductId: form.iapSKUProductId || generateSKU(),
+      iapSKUProductId: form.iapSKUProductId && form.iapSKUProductId.trim() !== "" 
+  ? form.iapSKUProductId 
+  : generateSKU(),
     });
 
     setForm({

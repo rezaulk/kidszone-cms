@@ -32,6 +32,8 @@ const BookCard = ({ book, onEdit, onDelete, onView }) => {
       )}
 
       <h3>{book.title}</h3>
+      <h3>{book.iapSKUProductId}</h3>
+
       <p>{book.category}</p>
       <p>{book.genre || "No Genre"}</p>
       <p>{book.contentType || "Books"}</p>
