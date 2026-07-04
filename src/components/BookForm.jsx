@@ -4,7 +4,7 @@ import { convertGoogleDriveUrl } from "../utils/pdfUrlHandler";
 import { fetchCategories } from "../firebase/categoryService";
 import { fetchGenres } from "../firebase/genreService";
 
-const BookForm = ({ onSubmit, editingBook }) => {
+const BookForm = ({ onSubmit, editingBook, onCancel }) => {
   const [form, setForm] = useState({
     title: "",
     thumbnailUrl: "",
@@ -101,6 +101,10 @@ const BookForm = ({ onSubmit, editingBook }) => {
     return `book_${randomPart()}_${randomPart().substring(0, 5)}_${randomPart().substring(0, 2)}`;
   };
 
+  const handleGenerateSKU = () => {
+    setForm((prevForm) => ({ ...prevForm, iapSKUProductId: generateSKU() }));
+  };
+
   const handleSubmit = (e) => {
     e.preventDefault();
     onSubmit({
@@ -145,125 +149,228 @@ const BookForm = ({ onSubmit, editingBook }) => {
     : genres;
 
   return (
-    <form className="form" onSubmit={handleSubmit}>
-      <input
-        name="title"
-        placeholder="Title"
-        value={form.title}
-        onChange={handleChange}
-        required
-      />
+    <form className="form form-premium" onSubmit={handleSubmit}>
+      {/* ===== BASIC INFORMATION ===== */}
+      <div className="form-section">
+        <h3 className="section-title">
+          <span className="section-icon">📝</span> Basic Information
+        </h3>
 
-      <input
-        name="thumbnailUrl"
-        placeholder="Thumbnail image URL"
-        value={form.thumbnailUrl}
-        onChange={handleChange}
-      />
+        <div className="field">
+          <label className="field-label" htmlFor="bf-title">
+            Title <span className="required">*</span>
+          </label>
+          <input
+            id="bf-title"
+            name="title"
+            placeholder="e.g. The Little Explorer"
+            value={form.title}
+            onChange={handleChange}
+            required
+          />
+        </div>
 
-      <select
-        name="category"
-        value={form.category}
-        onChange={handleChange}
-        required
-        disabled={loadingCategories}
-      >
-        <option value="">
-          {loadingCategories ? "Loading categories..." : "Select Category"}
-        </option>
-        {categoryOptions.map((categoryName) => (
-          <option key={categoryName} value={categoryName}>
-            {categoryName}
-          </option>
-        ))}
-      </select>
+        <div className="field">
+          <label className="field-label" htmlFor="bf-thumb">Thumbnail Image URL</label>
+          <div className="thumb-row">
+            <div className="thumb-preview">
+              {form.thumbnailUrl ? (
+                <img src={form.thumbnailUrl} alt="Thumbnail preview" />
+              ) : (
+                <span>No Image</span>
+              )}
+            </div>
+            <input
+              id="bf-thumb"
+              name="thumbnailUrl"
+              placeholder="https://example.com/cover.jpg"
+              value={form.thumbnailUrl}
+              onChange={handleChange}
+            />
+          </div>
+        </div>
 
-      <select
-        name="genre"
-        value={form.genre}
-        onChange={handleChange}
-        required
-        disabled={loadingGenres}
-      >
-        <option value="">
-          {loadingGenres ? "Loading genres..." : "Select Genre"}
-        </option>
-        {genreOptions.map((genreName) => (
-          <option key={genreName} value={genreName}>
-            {genreName}
-          </option>
-        ))}
-      </select>
+        <div className="form-row">
+          <div className="field">
+            <label className="field-label" htmlFor="bf-category">
+              Category <span className="required">*</span>
+            </label>
+            <select
+              id="bf-category"
+              name="category"
+              value={form.category}
+              onChange={handleChange}
+              required
+              disabled={loadingCategories}
+            >
+              <option value="">
+                {loadingCategories ? "Loading categories..." : "Select Category"}
+              </option>
+              {categoryOptions.map((categoryName) => (
+                <option key={categoryName} value={categoryName}>
+                  {categoryName}
+                </option>
+              ))}
+            </select>
+          </div>
 
-      <select
-        name="contentType"
-        value={form.contentType}
-        onChange={handleChange}
-        required
-      >
-        <option value="Books">Books</option>
-        <option value="Pages">Pages</option>
-      </select>
+          <div className="field">
+            <label className="field-label" htmlFor="bf-genre">
+              Genre <span className="required">*</span>
+            </label>
+            <select
+              id="bf-genre"
+              name="genre"
+              value={form.genre}
+              onChange={handleChange}
+              required
+              disabled={loadingGenres}
+            >
+              <option value="">
+                {loadingGenres ? "Loading genres..." : "Select Genre"}
+              </option>
+              {genreOptions.map((genreName) => (
+                <option key={genreName} value={genreName}>
+                  {genreName}
+                </option>
+              ))}
+            </select>
+          </div>
+        </div>
 
-      {form.isPremium && (
-        <input
-          name="price"
-          type="number"
-          placeholder="Price"
-          value={form.price}
-          onChange={handleChange}
-          min="0"
-          required
-        />
-      )}
+        <div className="form-row">
+          <div className="field">
+            <label className="field-label" htmlFor="bf-contentType">
+              Content Type <span className="required">*</span>
+            </label>
+            <select
+              id="bf-contentType"
+              name="contentType"
+              value={form.contentType}
+              onChange={handleChange}
+              required
+            >
+              <option value="Books">Books</option>
+              <option value="Pages">Pages</option>
+            </select>
+          </div>
 
-      <input
-        name="previewUrl"
-        placeholder="Google Drive link or direct PDF URL"
-        value={form.previewUrl}
-        onChange={handleChange}
-        required
-      />
-      <small style={{ opacity: 0.7 }}>
-        ✅ Google Drive: https://drive.google.com/file/d/FILE_ID/view
-        <br/>
-        ✅ Direct PDF: https://example.com/book.pdf
-      </small>
+          <div className="field">
+            <label className="field-label" htmlFor="bf-downloads">Downloads</label>
+            <input
+              id="bf-downloads"
+              name="downloads"
+              type="number"
+              min="0"
+              placeholder="0"
+              value={form.downloads}
+              onChange={handleChange}
+            />
+          </div>
+        </div>
+      </div>
 
-      <input
-        name="downloads"
-        type="number"
-        min="0"
-        placeholder="Downloads"
-        value={form.downloads}
-        onChange={handleChange}
-      />
+      {/* ===== PRICING & ACCESS ===== */}
+      <div className="form-section">
+        <h3 className="section-title">
+          <span className="section-icon">💎</span> Pricing &amp; Access
+        </h3>
 
-      <input
-        name="iapSKUProductId"
-        placeholder="IAP SKU Product ID (auto-generated if empty)"
-        value={form.iapSKUProductId}
-        onChange={handleChange}
-      />
+        <label className="toggle-field">
+          <span className="toggle-switch">
+            <input
+              type="checkbox"
+              name="isPremium"
+              checked={form.isPremium}
+              onChange={handleChange}
+            />
+            <span className="toggle-slider" />
+          </span>
+          <span className="toggle-text">
+            <strong>Premium Book</strong>
+            <small>Requires purchase to unlock via in-app purchase</small>
+          </span>
+        </label>
 
-      <label>
-        <input
-          type="checkbox"
-          name="isPremium"
-          checked={form.isPremium}
-          onChange={handleChange}
-        />
-        Premium Book
-      </label>
+        {form.isPremium && (
+          <div className="field price-field">
+            <label className="field-label" htmlFor="bf-price">
+              Price (USD) <span className="required">*</span>
+            </label>
+            <input
+              id="bf-price"
+              name="price"
+              type="number"
+              placeholder="0.00"
+              value={form.price}
+              onChange={handleChange}
+              min="0"
+              required
+            />
+          </div>
+        )}
+      </div>
 
-      <button type="submit">
-        {editingBook ? "Update Book" : "Add Book"}
-      </button>
+      {/* ===== CONTENT & DISTRIBUTION ===== */}
+      <div className="form-section">
+        <h3 className="section-title">
+          <span className="section-icon">🔗</span> Content &amp; Distribution
+        </h3>
+
+        <div className="field">
+          <label className="field-label" htmlFor="bf-previewUrl">
+            PDF Source <span className="required">*</span>
+          </label>
+          <input
+            id="bf-previewUrl"
+            name="previewUrl"
+            placeholder="Google Drive link or direct PDF URL"
+            value={form.previewUrl}
+            onChange={handleChange}
+            required
+          />
+          <small className="field-hint">
+            ✅ Google Drive: https://drive.google.com/file/d/FILE_ID/view
+            <br />
+            ✅ Direct PDF: https://example.com/book.pdf
+          </small>
+        </div>
+
+        <div className="field">
+          <label className="field-label" htmlFor="bf-sku">IAP SKU Product ID</label>
+          <div className="input-with-button">
+            <input
+              id="bf-sku"
+              name="iapSKUProductId"
+              placeholder="Auto-generated if left empty"
+              value={form.iapSKUProductId}
+              onChange={handleChange}
+            />
+            <button type="button" className="generate-btn" onClick={handleGenerateSKU}>
+              🎲 Generate
+            </button>
+          </div>
+        </div>
+      </div>
+
+      {/* ===== FORM ACTIONS ===== */}
+      <div className="form-actions">
+        {onCancel && (
+          <button type="button" className="cancel-form-btn" onClick={onCancel}>
+            Cancel
+          </button>
+        )}
+        <button type="submit" className="submit-btn">
+          {editingBook ? "💾 Update Book" : "✨ Add Book"}
+        </button>
+      </div>
 
       {/* 🔥 LIVE PDF PREVIEW */}
       {form.previewUrl && (
         <div className="live-preview">
-          <h4>PDF Preview</h4>
+          <h4>
+            <span className="section-icon">👁️</span> PDF Preview
+          </h4>
 
           {pdfError && (
             <div style={{

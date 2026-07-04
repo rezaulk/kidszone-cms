@@ -289,10 +289,14 @@ const filteredCount = filteredBooks.length;
       <Modal
         isOpen={isModalOpen}
         onClose={() => setIsModalOpen(false)}
+        title={editingBook ? "Edit Book" : "Add New Book"}
+        icon={editingBook ? "✏️" : "📚"}
+        size="lg"
       >
         <BookForm
           onSubmit={handleSubmit}
           editingBook={editingBook}
+          onCancel={() => setIsModalOpen(false)}
         />
       </Modal>
 
@@ -301,6 +305,8 @@ const filteredCount = filteredBooks.length;
 <Modal
   isOpen={isViewModalOpen}
   onClose={() => setIsViewModalOpen(false)}
+  title="Book Details"
+  icon="📖"
 >
   <ViewBook book={viewingBook} />
 </Modal>

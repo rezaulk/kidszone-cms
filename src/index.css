@@ -576,6 +576,273 @@ button:hover::before {
   margin-top: -8px;
 }
 
+/* ===== PREMIUM FORM LAYOUT ===== */
+.form-premium {
+  gap: 28px;
+}
+
+.form-section {
+  background: #f8fafc;
+  border: 1px solid #e2e8f0;
+  border-radius: 14px;
+  padding: 22px 22px 20px;
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+}
+
+.section-title {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  font-size: 14px;
+  font-weight: 700;
+  color: #4338ca;
+  text-transform: uppercase;
+  letter-spacing: 0.4px;
+}
+
+.section-icon {
+  font-size: 16px;
+  line-height: 1;
+}
+
+.field {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+
+.field-label {
+  font-size: 13px;
+  font-weight: 600;
+  color: #334155;
+}
+
+.required {
+  color: #ef4444;
+}
+
+.field-hint {
+  margin-top: 0 !important;
+  line-height: 1.5;
+}
+
+.form-row {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 16px;
+}
+
+.thumb-row {
+  display: flex;
+  align-items: center;
+  gap: 14px;
+}
+
+.thumb-row input {
+  flex: 1;
+}
+
+.thumb-preview {
+  flex: 0 0 auto;
+  width: 56px;
+  height: 56px;
+  border-radius: 10px;
+  border: 2px solid #e2e8f0;
+  background: white;
+  overflow: hidden;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: #94a3b8;
+  font-size: 9px;
+  font-weight: 600;
+  text-align: center;
+}
+
+.thumb-preview img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+
+.input-with-button {
+  display: flex;
+  gap: 10px;
+}
+
+.input-with-button input {
+  flex: 1;
+}
+
+.generate-btn {
+  flex: 0 0 auto;
+  padding: 0 18px;
+  background: #e0e7ff;
+  color: #4f46e5;
+  border: 2px solid transparent;
+  border-radius: 8px;
+  font-weight: 600;
+  font-size: 13px;
+  white-space: nowrap;
+  cursor: pointer;
+  transition: all 0.3s ease;
+}
+
+.generate-btn:hover {
+  background: #6366f1;
+  color: white;
+}
+
+/* Premium toggle switch */
+.toggle-field {
+  display: flex;
+  align-items: center;
+  gap: 14px;
+  cursor: pointer;
+  padding: 4px 0;
+}
+
+.toggle-switch {
+  position: relative;
+  flex: 0 0 auto;
+  width: 46px;
+  height: 26px;
+  display: inline-block;
+}
+
+.toggle-switch input {
+  opacity: 0;
+  width: 0;
+  height: 0;
+  position: absolute;
+}
+
+.toggle-slider {
+  position: absolute;
+  inset: 0;
+  background: #cbd5e1;
+  border-radius: 999px;
+  transition: all 0.3s ease;
+}
+
+.toggle-slider::before {
+  content: "";
+  position: absolute;
+  width: 20px;
+  height: 20px;
+  left: 3px;
+  top: 3px;
+  background: white;
+  border-radius: 50%;
+  transition: all 0.3s ease;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.2);
+}
+
+.toggle-switch input:checked + .toggle-slider {
+  background: linear-gradient(135deg, #6366f1 0%, #4f46e5 100%);
+}
+
+.toggle-switch input:checked + .toggle-slider::before {
+  transform: translateX(20px);
+}
+
+.toggle-switch input:focus-visible + .toggle-slider {
+  box-shadow: 0 0 0 3px rgba(99, 102, 241, 0.25);
+}
+
+.toggle-text {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+}
+
+.toggle-text strong {
+  font-size: 14px;
+  color: #1a202c;
+}
+
+.toggle-text small {
+  font-size: 12px;
+  color: #718096;
+  margin-top: 0;
+}
+
+.price-field {
+  padding-left: 60px;
+}
+
+/* Sticky form actions */
+.form-actions {
+  position: sticky;
+  bottom: 0;
+  margin: 0 -32px -32px;
+  padding: 16px 32px;
+  background: rgba(255, 255, 255, 0.92);
+  backdrop-filter: blur(6px);
+  border-top: 2px solid #e2e8f0;
+  display: flex;
+  justify-content: flex-end;
+  gap: 12px;
+  border-radius: 0 0 16px 16px;
+}
+
+.cancel-form-btn {
+  flex: 0 0 auto;
+  padding: 12px 22px;
+  background: #f1f5f9;
+  color: #475569;
+  border: none;
+  border-radius: 8px;
+  font-weight: 600;
+  font-size: 14px;
+  cursor: pointer;
+  transition: all 0.3s ease;
+}
+
+.cancel-form-btn:hover {
+  background: #e2e8f0;
+}
+
+.submit-btn {
+  flex: 0 0 auto;
+  background: linear-gradient(135deg, #6366f1 0%, #4f46e5 100%);
+  color: white;
+  padding: 12px 28px;
+  font-weight: 600;
+  font-size: 14px;
+  border: none;
+  border-radius: 8px;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  box-shadow: 0 4px 12px rgba(99, 102, 241, 0.3);
+}
+
+.submit-btn:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 8px 20px rgba(99, 102, 241, 0.4);
+}
+
+@media (max-width: 640px) {
+  .form-row {
+    grid-template-columns: 1fr;
+  }
+
+  .price-field {
+    padding-left: 0;
+  }
+
+  .form-actions {
+    flex-direction: column-reverse;
+  }
+
+  .submit-btn,
+  .cancel-form-btn {
+    width: 100%;
+  }
+}
+
 /* ===== LIVE PREVIEW ===== */
 .live-preview {
   margin-top: 24px;
@@ -643,6 +910,34 @@ button:hover::before {
   font-size: 13px;
 }
 
+/* ===== DOWNLOADS ROW (card) ===== */
+.downloads-row {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 8px;
+}
+
+.download-controls {
+  display: flex;
+  gap: 6px;
+}
+
+button.small {
+  flex: 0 0 auto;
+  min-width: 36px;
+  padding: 6px 10px;
+  font-size: 11px;
+  background: #e0e7ff;
+  color: #6366f1;
+}
+
+button.small:hover {
+  background: #6366f1;
+  color: white;
+  transform: translateY(-1px);
+}
+
 /* ===== MODAL ===== */
 .modal-overlay {
   position: fixed;
@@ -687,16 +982,50 @@ button:hover::before {
   max-height: 90vh;
   overflow-y: auto;
   border-radius: 16px;
-  padding: 32px;
+  padding: 0;
   position: relative;
   box-shadow: 0 20px 60px rgba(0, 0, 0, 0.3);
   animation: slideUp 0.3s ease;
+  display: flex;
+  flex-direction: column;
+}
+
+.modal-lg {
+  max-width: 760px;
+}
+
+.modal-header {
+  flex: 0 0 auto;
+  padding: 24px 60px 20px 32px;
+  border-bottom: 2px solid #f1f5f9;
+  background: linear-gradient(135deg, #eef2ff 0%, #ffffff 100%);
+  border-radius: 16px 16px 0 0;
+}
+
+.modal-header h2 {
+  font-size: 20px;
+  font-weight: 700;
+  color: #1a202c;
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
+.modal-header-icon {
+  font-size: 22px;
+  line-height: 1;
+}
+
+.modal-body {
+  padding: 28px 32px 32px;
+  overflow-y: auto;
 }
 
 .close-btn {
   position: absolute;
   right: 16px;
   top: 16px;
+  z-index: 2;
   display: inline-flex;
   align-items: center;
   justify-content: center;
