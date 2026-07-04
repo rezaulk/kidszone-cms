@@ -12,6 +12,19 @@ function App() {
   const [books, setBooks] = useState([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
+  
+  // update downloads count
+  const updateDownloads = async (bookId, delta) => {
+    try {
+      // lazy import to avoid circulars if any
+      const { incrementBookDownloads } = await import("./firebase/firebaseService");
+      const newCount = await incrementBookDownloads(bookId, delta);
+      setBooks((prev) => prev.map((b) => (b.id === bookId ? { ...b, downloads: newCount } : b)));
+    } catch (err) {
+      console.error("Failed to update downloads:", err);
+      setError("Failed to update downloads. Please try again.");
+    }
+  };
 
   // Load books from Firebase Realtime Database on component mount
   useEffect(() => {
@@ -83,6 +96,7 @@ function App() {
         addBook={addBook}
         updateBook={updateBook}
         deleteBook={deleteBook}
+        updateDownloads={updateDownloads}
       />
     </>
   );

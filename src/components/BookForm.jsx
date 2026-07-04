@@ -15,6 +15,7 @@ const BookForm = ({ onSubmit, editingBook }) => {
     isPremium: false,
     previewUrl: "",
     iapSKUProductId: "",
+    downloads: 0,
   });
 
   const [numPages, setNumPages] = useState(null);
@@ -61,7 +62,6 @@ const BookForm = ({ onSubmit, editingBook }) => {
 
   useEffect(() => {
     if (editingBook) {
-      debugger;
       setForm({
         title: editingBook.title || "",
         thumbnailUrl: editingBook.thumbnailUrl || "",
@@ -72,6 +72,7 @@ const BookForm = ({ onSubmit, editingBook }) => {
         isPremium: !!editingBook.isPremium,
         previewUrl: editingBook.previewUrl || "",
         iapSKUProductId: editingBook.iapSKUProductId || "",
+        downloads: editingBook.downloads ?? 0,
         id: editingBook.id,
       });
     }
@@ -106,8 +107,9 @@ const BookForm = ({ onSubmit, editingBook }) => {
       ...form,
       price: form.isPremium ? form.price : 0,
       iapSKUProductId: form.iapSKUProductId && form.iapSKUProductId.trim() !== "" 
-  ? form.iapSKUProductId 
-  : generateSKU(),
+        ? form.iapSKUProductId 
+        : generateSKU(),
+      downloads: Number(form.downloads) || 0,
     });
 
     setForm({
@@ -120,6 +122,7 @@ const BookForm = ({ onSubmit, editingBook }) => {
       isPremium: false,
       previewUrl: "",
       iapSKUProductId: "",
+      downloads: 0,
     });
   };
 
@@ -226,6 +229,15 @@ const BookForm = ({ onSubmit, editingBook }) => {
         <br/>
         ✅ Direct PDF: https://example.com/book.pdf
       </small>
+
+      <input
+        name="downloads"
+        type="number"
+        min="0"
+        placeholder="Downloads"
+        value={form.downloads}
+        onChange={handleChange}
+      />
 
       <input
         name="iapSKUProductId"

@@ -9,7 +9,7 @@ import { fetchCategories } from "../firebase/categoryService";
 import { fetchGenres } from "../firebase/genreService";
 
 
-const Home = ({ books, addBook, updateBook, deleteBook }) => {
+const Home = ({ books, addBook, updateBook, deleteBook, updateDownloads }) => {
   const [editingBook, setEditingBook] = useState(null);
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [search, setSearch] = useState("");
@@ -279,6 +279,7 @@ const filteredCount = filteredBooks.length;
   onEdit={openEditModal}
   onDelete={deleteBook}
   onView={openViewModal}
+  onUpdateDownloads={updateDownloads}
 />
 
         ))}

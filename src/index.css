@@ -337,6 +337,17 @@ body {
   border-color: #f59e0b;
 }
 
+.card.standard {
+  border: 2px solid #10b981;
+  background: linear-gradient(135deg, #ecfdf5 0%, #ffffff 100%);
+  box-shadow: 0 8px 24px rgba(16, 185, 129, 0.12);
+}
+
+.card.standard:hover {
+  box-shadow: 0 12px 32px rgba(16, 185, 129, 0.22);
+  border-color: #10b981;
+}
+
 .card h3 {
   font-size: 18px;
   font-weight: 600;
@@ -377,7 +388,7 @@ body {
   margin-top: 10px;
 }
 
-.premium {
+.premium-badge {
   position: absolute;
   top: 12px;
   right: 12px;
@@ -392,7 +403,7 @@ body {
   animation: badgePulse 2s ease-in-out infinite;
 }
 
-.free-badge {
+.standard-badge {
   position: absolute;
   top: 12px;
   right: 12px;

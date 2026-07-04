@@ -5,6 +5,7 @@ import {
   remove,
   set,
   update,
+  runTransaction,
 } from "firebase/database";
 import { db } from "./config";
 
@@ -74,6 +75,30 @@ export const updateBookInFirebase = async (book) => {
     });
   } catch (error) {
     console.error("Error updating book:", error);
+    throw error;
+  }
+};
+
+/**
+ * Increment (or decrement) the downloads count for a book atomically.
+ * @param {string} bookId - Realtime DB key
+ * @param {number} delta - Amount to change downloads by (use negative to decrement)
+ * @returns {Promise<number>} The updated downloads value
+ */
+export const incrementBookDownloads = async (bookId, delta = 1) => {
+  try {
+    const downloadsRef = ref(db, `${BOOKS_COLLECTION}/${bookId}/downloads`);
+    const result = await runTransaction(downloadsRef, (current) => {
+      return (current || 0) + delta;
+    });
+
+    if (!result.committed) {
+      throw new Error("Failed to commit downloads transaction");
+    }
+
+    return result.snapshot.val();
+  } catch (error) {
+    console.error("Error incrementing downloads:", error);
     throw error;
   }
 };

@@ -1,7 +1,7 @@
 import React from "react";
 import { convertThumbnailUrl } from "../utils/pdfUrlHandler";
 
-const BookCard = ({ book, onEdit, onDelete, onView }) => {
+const BookCard = ({ book, onEdit, onDelete, onView, onUpdateDownloads }) => {
   const isPremiumBook = !!book.isPremium;
 
   const handleDelete = () => {
@@ -14,11 +14,11 @@ const BookCard = ({ book, onEdit, onDelete, onView }) => {
   };
 
   return (
-    <div className="card">
+    <div className={`card ${isPremiumBook ? "premium" : "standard"}`}>
       {isPremiumBook ? (
-        <span className="premium">⭐ PREMIUM</span>
+        <span className="premium-badge">⭐ PREMIUM</span>
       ) : (
-        <span className="free-badge">FREE</span>
+        <span className="standard-badge">STANDARD</span>
       )}
 
       {book.thumbnailUrl ? (
@@ -37,6 +37,20 @@ const BookCard = ({ book, onEdit, onDelete, onView }) => {
       <p>{book.category}</p>
       <p>{book.genre || "No Genre"}</p>
       <p>{book.contentType || "Books"}</p>
+      <div className="downloads-row">
+        <p className="downloads">Downloads: {book.downloads || 0}</p>
+        <div className="download-controls">
+          {onUpdateDownloads && (
+            <button
+              className="small"
+              onClick={() => onUpdateDownloads(book.id, 1)}
+              title="Add one download"
+            >
+              +1
+            </button>
+          )}
+        </div>
+      </div>
       {isPremiumBook && <p className="price-text">${book.price}</p>}
 
       <div className="buttons">
